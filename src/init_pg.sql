@@ -1,0 +1,79 @@
+-- PostgreSQL 初始化脚本
+CREATE TABLE IF NOT EXISTS scenarios (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  icon VARCHAR(50),
+  description TEXT,
+  sort_order INT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS skills (
+  id SERIAL PRIMARY KEY,
+  code VARCHAR(50) NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  icon VARCHAR(50),
+  description TEXT,
+  tool_list TEXT,
+  sort_order INT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS scenario_skills (
+  id SERIAL PRIMARY KEY,
+  scenario_id INT NOT NULL,
+  skill_id INT NOT NULL,
+  sort_order INT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(scenario_id, skill_id)
+);
+
+CREATE TABLE IF NOT EXISTS ppt_slides (
+  id SERIAL PRIMARY KEY,
+  skill_id INT NOT NULL,
+  title VARCHAR(200) NOT NULL,
+  type VARCHAR(50) NOT NULL,
+  content JSONB,
+  tools JSONB,
+  sort_order INT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  nickname VARCHAR(50),
+  avatar VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS user_favorites (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL,
+  skill_id INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(user_id, skill_id)
+);
+
+CREATE TABLE IF NOT EXISTS user_progress (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL,
+  skill_id INT NOT NULL,
+  current_slide INT DEFAULT 0,
+  completed BOOLEAN DEFAULT FALSE,
+  last_study_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(user_id, skill_id)
+);
+
+CREATE TABLE IF NOT EXISTS ai_models (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  description TEXT,
+  category VARCHAR(50),
+  url VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
