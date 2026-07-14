@@ -2,7 +2,9 @@ import axios from 'axios'
 import { ElMessage } from 'element-plus'
 
 const request = axios.create({
-  baseURL: '/api',
+  baseURL: import.meta.env.PROD
+    ? 'https://ai-empower-platform-2u3fqdhrb-haitang1.vercel.app/api'
+    : '/api',
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json'
