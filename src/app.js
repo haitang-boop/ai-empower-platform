@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const path = require('path');
 require('dotenv').config();
 
 const { testConnection } = require('./config/db');
@@ -42,21 +43,6 @@ app.use('/api/users', userRoutes);
 app.use('/api/models', aiModelRoutes);
 
 // ============================================================
-// 根路由
-// ============================================================
-app.get('/', (req, res) => {
-  res.json({
-    code: 200,
-    data: {
-      name: 'AI赋能大学生技能PPT教程平台',
-      version: '1.0.0',
-      docs: '/api/health'
-    },
-    message: '欢迎使用AI赋能平台API'
-  });
-});
-
-// ============================================================
 // 健康检查
 // ============================================================
 app.get('/api/health', (req, res) => {
@@ -72,13 +58,23 @@ app.get('/api/health', (req, res) => {
 });
 
 // ============================================================
-// 404 处理
+// 静态文件服务 - serve 前端构建产物
 // ============================================================
-app.use((req, res) => {
-  res.status(404).json({
-    code: 404,
-    message: `接口不存在: ${req.method} ${req.originalUrl}`
-  });
+const distPath = path.join(__dirname, '..', 'frontend', 'dist');
+app.use(express.static(distPath));
+
+// ============================================================
+// 前端路由回退 - Vue hash 路由支持
+// 所有非 API 请求返回前端 index.html
+// ============================================================
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({
+      code: 404,
+      message: `接口不存在: ${req.method} ${req.originalUrl}`
+    });
+  }
+  res.sendFile(path.join(distPath, 'index.html'));
 });
 
 // ============================================================
